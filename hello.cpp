@@ -81,6 +81,8 @@ private:
     
     std::vector<VkFramebuffer> swapChainFramebuffers;
     
+    VkCommandPool commandPool;
+    
     void initWindow() {
         glfwInit();
         
@@ -100,6 +102,7 @@ private:
         createRenderPass();
         createGraphicsPipeline();
         createFramebuffers();
+        createCommandPool();
     }
     
     void mainLoop() {
@@ -109,6 +112,8 @@ private:
     }
     
     void cleanup() {
+        vkDestroyCommandPool(device, commandPool, nullptr);
+        
         for (auto framebuffer : swapChainFramebuffers)
             vkDestroyFramebuffer(device, framebuffer, nullptr);
         
@@ -469,6 +474,18 @@ private:
             if (result != VK_SUCCESS)
                 throw std::runtime_error("failed to create framebuffer!");
         }
+    }
+    
+    void createCommandPool() {
+        QueueFamilyIndices queueFamilyIndices = findQueueFamilies(physicalDevice);
+        
+        VkCommandPoolCreateInfo poolInfo = {};
+        poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+        poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
+        
+        VkResult result = vkCreateCommandPool(device, &poolInfo, nullptr, &commandPool);
+        if (result != VK_SUCCESS)
+            throw std::runtime_error("failed to create command pool!");
     }
     
     bool checkValidationLayerSupport() {
