@@ -43,7 +43,7 @@ struct Vertex {
     glm::vec2 pos;
     glm::vec3 color;
     
-    static VkVertexInputBindingDescription getBindingDescription() {
+    static constexpr VkVertexInputBindingDescription getBindingDescription() {
         VkVertexInputBindingDescription bindingDescription = {};
         bindingDescription.binding = 0;
         bindingDescription.stride = sizeof(Vertex);
@@ -52,7 +52,7 @@ struct Vertex {
         return bindingDescription;
     }
     
-    static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescriptions() {
+    static constexpr std::array<VkVertexInputAttributeDescription, 2> getAttributeDescriptions() {
         std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions = {};
         attributeDescriptions[0].binding = 0;
         attributeDescriptions[0].location = 0;
@@ -89,7 +89,7 @@ struct QueueFamilyIndices {
     std::optional<uint32_t> graphicsFamily;
     std::optional<uint32_t> presentFamily;
 
-    bool isComplete() const {
+    constexpr bool isComplete() const {
         return graphicsFamily.has_value() && presentFamily.has_value();
     }
 };
@@ -346,7 +346,7 @@ private:
         std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
         std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily.value(), indices.presentFamily.value()};
 
-        const float queuePriority = 1.0f;
+        constexpr float queuePriority = 1.0f;
         for (uint32_t queueFamily : uniqueQueueFamilies) {
             VkDeviceQueueCreateInfo queueCreateInfo = {};
             queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
