@@ -79,7 +79,7 @@ struct QueueFamilyIndices {
     std::optional<uint32_t> graphicsFamily;
     std::optional<uint32_t> presentFamily;
 
-    bool isComplete() {
+    bool isComplete() const {
         return graphicsFamily.has_value() && presentFamily.has_value();
     }
 };
@@ -313,7 +313,7 @@ private:
         std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
         std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily.value(), indices.presentFamily.value()};
 
-        float queuePriority = 1.0f;
+        const float queuePriority = 1.0f;
         for (uint32_t queueFamily : uniqueQueueFamilies) {
             VkDeviceQueueCreateInfo queueCreateInfo = {};
             queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
@@ -466,8 +466,8 @@ private:
     }
     
     void createGraphicsPipeline() {
-        auto vertShaderCode = readFile("../shaders/hello.vert.spv");
-        auto fragShaderCode = readFile("../shaders/hello.frag.spv");
+        const auto vertShaderCode = readFile("../shaders/hello.vert.spv");
+        const auto fragShaderCode = readFile("../shaders/hello.frag.spv");
         
         VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
         VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);
@@ -611,7 +611,7 @@ private:
             throw std::runtime_error("failed to create command pool!");
     }
     
-    void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory) {
+    void createBuffer(const VkDeviceSize size, const VkBufferUsageFlags usage, const VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory) {
         VkBufferCreateInfo bufferInfo = {};
         bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
         bufferInfo.size = size;
@@ -635,7 +635,7 @@ private:
         vkBindBufferMemory(device, buffer, bufferMemory, 0);
     }
     
-    void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
+    void copyBuffer(const VkBuffer srcBuffer, const VkBuffer dstBuffer, const VkDeviceSize size) {
         VkCommandBufferAllocateInfo allocInfo = {};
         allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
         allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
@@ -853,7 +853,7 @@ private:
         return requiredLayers.empty();
     }
     
-    std::vector<const char *> getRequiredExtensions() {
+    std::vector<const char *> getRequiredExtensions() const {
         uint32_t glfwExtensionCount = 0;
         const char **glfwExtensions;
         
@@ -868,7 +868,7 @@ private:
         return extensions;
     }
     
-    bool checkDeviceExtensionSupport(VkPhysicalDevice device) {
+    bool checkDeviceExtensionSupport(const VkPhysicalDevice device) const {
         uint32_t extensionCount;
         vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
         
@@ -882,8 +882,8 @@ private:
         return requiredExtensions.empty();
     }
     
-    bool isDeviceSuitable(VkPhysicalDevice device) {
-        QueueFamilyIndices indices = findQueueFamilies(device);
+    bool isDeviceSuitable(const VkPhysicalDevice device) const {
+        const QueueFamilyIndices indices = findQueueFamilies(device);
         
         bool extensionsSupported = checkDeviceExtensionSupport(device);
         
@@ -896,7 +896,7 @@ private:
         return indices.isComplete() && extensionsSupported && swapchainAdequate;
     }
     
-    QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device) {
+    QueueFamilyIndices findQueueFamilies(const VkPhysicalDevice device) const {
         uint32_t queueFamilyCount = 0;
         vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
         
@@ -924,7 +924,7 @@ private:
         return indices;
     }
     
-    SwapchainSupportDetails querySwapchainSupport(VkPhysicalDevice device) {
+    SwapchainSupportDetails querySwapchainSupport(const VkPhysicalDevice device) const {
         SwapchainSupportDetails details;
         vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);
         
@@ -943,7 +943,7 @@ private:
         return details;
     }
     
-    VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats) {
+    VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR> &availableFormats) const {
         for (const auto &availableFormat : availableFormats) {
             if (availableFormat.format == VK_FORMAT_B8G8R8A8_UNORM && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
                 return availableFormat;
@@ -952,7 +952,7 @@ private:
         return availableFormats[0];
     }
     
-    VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes) {
+    VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR> &availablePresentModes) const {
         for (const auto &availablePresentMode : availablePresentModes) {
             if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR)
                 return availablePresentMode;
@@ -961,7 +961,7 @@ private:
         return VK_PRESENT_MODE_FIFO_KHR;
     }
     
-    VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities) {
+    VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities) const {
         if (capabilities.currentExtent.width != UINT32_MAX) {
             return capabilities.currentExtent;
         } else {
@@ -993,13 +993,13 @@ private:
         return shaderModule;
     }
     
-    uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
+    uint32_t findMemoryType(const uint32_t typeFilter, const VkMemoryPropertyFlags properties) const {
         VkPhysicalDeviceMemoryProperties memProperties;
         vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
         
         for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
-            bool isSuitableType = typeFilter & (1 << i);
-            bool hasRequiredProperties = (memProperties.memoryTypes[i].propertyFlags & properties) == properties;
+            const bool isSuitableType = typeFilter & (1 << i);
+            const bool hasRequiredProperties = (memProperties.memoryTypes[i].propertyFlags & properties) == properties;
             
             if (isSuitableType && hasRequiredProperties)
                 return i;
@@ -1008,7 +1008,7 @@ private:
         throw std::runtime_error("failed to find suitable memory type!");
     }
     
-    std::vector<char> readFile(const std::string_view &filename) {
+    std::vector<char> readFile(const std::string_view &filename) const {
         std::ifstream file(filename, std::ios::ate | std::ios::binary);
         
         if (!file.is_open())
